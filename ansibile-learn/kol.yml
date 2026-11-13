@@ -1,0 +1,19 @@
+---
+- name: configure an simple directory
+  hosts: all
+  tasks:
+    - name: create an directiry
+      file:
+        path: /home/kaldreth/ASUS_TEST_GROUP
+        state: directory
+    - name: Create a file
+      file:
+        path: /home/kaldreth/ASUS_TEST_GROUP/hello.txt
+        state: touch
+    - name: Create an user
+      user:
+        name: cheese
+        uid: 9998
+        create_home: true
+        shell: /usr/bin/bash
+        state: present    

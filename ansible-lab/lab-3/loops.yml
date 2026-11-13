@@ -1,0 +1,18 @@
+---
+- name: Create multiple users using var and loops
+  hosts: all
+  become: true
+  vars:
+    users_to_create:
+      - name: "Goutham"
+        uid: 3000
+      - name: "Nandana"
+        uid: 3001
+
+  tasks:
+    - name: Create users
+      user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        state: present
+      loop: "{{ users_to_create}}"  

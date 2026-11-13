@@ -1,0 +1,90 @@
+---
+- name: Full setup of Nginx Webserver
+  hosts: server
+  vars_files:
+    - vars/main.yml
+  tasks:
+    - name: Wait for unattended-upgrades to finish
+      ansible.builtin.raw: systemctl is-active --quiet unattended-upgrades && systemd-run --property="After=unattended-upgrades.service" /bin/true || /bin/true
+      changed_when: false
+    - name: Install Nginx webserver
+      package:
+        name: nginx
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+        lock_timeout: 300
+    - name: Start and Enable Service
+      service:
+        name: nginx
+        state: started
+        enabled: true
+    - name: Allow ports for ufw
+      community.general.ufw:
+        rule: allow
+        port: "{{ item.port }}"
+        proto: tcp
+      loop:
+        - port: '80'
+        - port: '443'
+      notify: Restart Firewall
+    - name: Allow services in ufw
+      community.general.ufw:
+        rule: allow
+        name: 'Nginx Full'
+      notify: Restart Firewall
+    - name: Create Directory structure and Permission
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - /var/www/html/website1
+        - /var/www/html/website2
+    - name: deploy index.html for Both sites
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+      loop:
+        - src: templates/site1_index.html.j2
+          dest: /var/www/html/website1/index.html
+        - src: templates/site2_index.html.j2
+          dest: /var/www/html/website2/index.html
+      notify: Restart Nginx
+    - name: Deploy the Config file for nginx
+      template:
+        src: templates/vhost.conf.j2
+        dest: "/etc/nginx/sites-available/{{ item.name }}"
+        owner: root
+        group: root
+        mode: '0644'
+      loop: "{{ nginx_sites }}"
+      notify: Reload Nginx
+    - name: Enable Site configuration via symlink
+      file:
+        src: "/etc/nginx/sites-available/{{ item.name }}"
+        dest: "/etc/nginx/sites-enabled/{{ item.name }}"
+        state: link
+      loop: "{{ nginx_sites }}"
+      notify: Reload Nginx
+    - name: Remove default Nginx site Configuration 
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: Reload Nginx
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
+    - name: Restart Firewall
+      service:
+        name: ufw
+        state: restarted

@@ -1,0 +1,9 @@
+---
+- name: Uninstall service
+  hosts: webserver
+  tasks:
+    - name: remove apache
+      package:
+        name: apache2
+        state: absent
+

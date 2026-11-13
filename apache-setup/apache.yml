@@ -1,0 +1,17 @@
+---
+- name: removing Apache from webserver
+  hosts: all
+  become: True
+  tasks:
+    - name: stop service httpd
+      service:
+        name: httpd
+        state: stopped
+    - name: disable the service
+      service:
+        name: httpd 
+        enabled: False
+    - name: remvoe the service
+      dnf:
+        name: httpd
+        state: absent

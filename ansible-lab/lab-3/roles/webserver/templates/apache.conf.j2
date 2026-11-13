@@ -1,0 +1,40 @@
+# {{ ansible_managed }}
+# Apache VirtualHost configuration for {{ item.server_name | default(server_name) }}
+
+<VirtualHost *:{{ item.http_port | default(http_port | default(80)) }}>
+    ServerAdmin {{ item.server_admin | default(server_admin | default('webmaster@localhost')) }}
+    ServerName {{ item.server_name }}
+{% if item.server_aliases is defined and item.server_aliases %}
+    ServerAlias {{ item.server_aliases | join(' ') }}
+{% endif %}
+
+    DocumentRoot {{ item.document_root | default('/var/www/html/' ~ item.server_name) }}
+
+    <Directory {{ item.document_root | default('/var/www/html/' ~ item.server_name) }}>
+        Options {{ item.directory_options | default('Indexes FollowSymLinks') }}
+        AllowOverride {{ item.allow_override | default('All') }}
+        Require all granted
+    </Directory>
+
+    # Custom Environment Variables
+{% if item.env_vars is defined %}
+{% for key, value in item.env_vars.items() %}
+    SetEnv {{ key }} "{{ value }}"
+{% endfor %}
+{% endif %}
+
+    # Logging Directives
+    LogLevel {{ item.log_level | default('warn') }}
+    ErrorLog ${APACHE_LOG_DIR}/{{ item.server_name }}_error.log
+    CustomLog ${APACHE_LOG_DIR}/{{ item.server_name }}_access.log combined
+
+{% if item.ssl_enabled | default(false) %}
+    # SSL/TLS Configuration
+    SSLEngine on
+    SSLCertificateFile {{ item.ssl_cert_file }}
+    SSLCertificateKeyFile {{ item.ssl_key_file }}
+{% if item.ssl_chain_file is defined %}
+    SSLCertificateChainFile {{ item.ssl_chain_file }}
+{% endif %}
+{% endif %}
+</VirtualHost>

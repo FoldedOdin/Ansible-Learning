@@ -1,0 +1,47 @@
+---
+- name: Configure user,group, archive,daily cronjob
+  hosts: all
+  become: true
+  vars:
+    user: "cheese"
+    group: "old_cheese"
+    backup_dest: "/home/{{ user }}/backups"
+    backup_file: "/home/cheese/backups/backup.tar"
+    backup_files: "/var/log"
+  tasks:
+    - name: Create Group
+      group:
+        name: "{{ group }}"
+        state: present
+    - name: Create user
+      user:
+        name: "{{ user }}"
+        group: "{{ group }}"
+        create_home: true
+        shell: /bin/bash
+        state: present
+    - name: Create the Destination Direcory
+      file:
+        path: "{{ backup_dest }}"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ group }}"
+        mode: "0750"
+    - name: Create a tar archive
+      community.general.archive:
+        path: "{{ backup_files }}"
+        dest: "{{ backup_file }}"
+        format: tar
+        owner: "{{ user }}"
+        group: "{{ group }}"
+        mode: "0640"
+    - name: Schedule Crontab to run backups
+      cron:
+        name: "Daily /var/log backup"
+        minute: "0"
+        hour: "10"
+        day: "*"
+        month: "*"
+        weekday: "*"
+        user: "root"
+        job: "/usr/bin/tar -cf {{ backup_file }} {{ backup_files }} && chown {{ user }}:{{ group }} {{ backup_file }}" 

@@ -1,0 +1,12 @@
+---
+site1_title: "My Terminal Site"
+site1_domain: "myterminal.com"
+
+site2_title: "My Service Portal"
+site2_domain: "myserviceportal.com"
+
+nginx_sites:
+  - name: website1
+    domain: myterminal.com
+  - name: website2
+    domain: myserviceportal.com

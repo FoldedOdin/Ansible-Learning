@@ -1,0 +1,6 @@
+---
+common_utilities:
+  - tmux
+  - zsh
+  - git
+  - htop

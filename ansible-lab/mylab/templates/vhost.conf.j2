@@ -1,0 +1,30 @@
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name {{ item.domain }} www.{{ item.domain }};
+
+    root /var/www/html/{{ item.name }};
+    index index.html index.htm;
+
+    # Dedicated access and error logs
+    access_log /var/log/nginx/{{ item.name }}.access.log;
+    error_log /var/log/nginx/{{ item.name }}.error.log;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Cache static assets
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2)$ {
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+
+    # Deny access to hidden files (.git, .env, etc.)
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+}

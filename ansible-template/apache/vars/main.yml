@@ -1,0 +1,31 @@
+#SPDX-License-Identifier: MIT-0
+---
+# Web Server Metadata
+apache_site_title: "Production Web Services"
+apache_server_hostname: "{{ ansible_fqdn | default('localhost') }}"
+apache_environment: "Production"
+apache_admin_email: "webmaster@example.com"
+
+# Content Configuration
+apache_page_heading: "Welcome to Our Infrastructure"
+apache_page_subheading: "High-performance HTTP server deployed and configured automatically."
+apache_status_message: "Apache HTTP Server is active, healthy, and serving requests."
+
+# Feature / Quick-Link Tiles
+apache_service_tiles:
+  - name: "Documentation"
+    description: "Internal team guides, API references, and deployment logs."
+    url: "/docs"
+    status: "Operational"
+  - name: "Monitoring"
+    description: "System telemetry, load averages, and performance metrics."
+    url: "/metrics"
+    status: "Active"
+  - name: "Administration"
+    description: "Server configuration, host control panel, and management tooling."
+    url: "/admin"
+    status: "Restricted"
+
+# Build / Footer Info
+apache_version_tag: "Apache/2.4 (Unix)"
+apache_deployed_by: "Ansible Provisioner"

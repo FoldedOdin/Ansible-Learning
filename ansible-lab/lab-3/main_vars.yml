@@ -1,0 +1,27 @@
+---
+- name: Create a user and Install apache package
+  hosts: all
+  become: true
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Create user
+      user:
+        name: "{{username}}"
+        home: "{{home_dir}}"
+        create_home: yes
+        state: present
+    - name: Install apache
+      package:
+        name: "{{service_name}}"
+        state: present
+    - name: create directory
+      file:
+        path: "{{directory_path}}"
+        state: directory
+        owner: "{{username}}"
+        group: "{{username}}"
+        mode: '0755'
+    - name: Gather Facts
+      debug:
+        msg: "The Server is running on {{ansible_os_family}}"

@@ -1,0 +1,14 @@
+---
+- name: Install,Start and enable apache Server
+  hosts: all
+  become: true
+  tasks:
+    - name: Install apache HTTP Server
+      dnf:
+        name: httpd
+        state: present
+    - name: start and enable the service
+      dnf:
+        name: httpd
+        state: started
+        enabled: true

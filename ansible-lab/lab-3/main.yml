@@ -1,0 +1,16 @@
+---
+- name: Create a user and Install apache package
+  hosts: all
+  become: true
+  vars:
+    username: Rohit
+    service_name: apache2
+  tasks:
+    - name: Create user
+      user:
+        name: "{{username}}"
+        state: present
+    - name: Install apache
+      package:
+        name: "{{service_name}}"
+        state: present

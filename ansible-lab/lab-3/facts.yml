@@ -1,0 +1,12 @@
+---
+- name: gathering managed system facts
+  hosts: all
+  become: true
+  tasks:
+    - name: print hostname
+      debug:
+        var: ansible_facts.hostname
+    - name: print OS distribution
+      debug:
+        var: ansible_facts.distribution
+

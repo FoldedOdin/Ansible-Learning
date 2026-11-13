@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site2_title | default('Site Two | Services') }}</title>
+    <style>
+        :root {
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.2);
+            --bg: #18181b;
+            --panel: #27272a;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .portal-card {
+            background-color: var(--panel);
+            border-radius: 16px;
+            max-width: 480px;
+            width: 100%;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid #3f3f46;
+            position: relative;
+        }
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            background-color: var(--accent-glow);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 1px solid var(--accent);
+        }
+        h1 {
+            font-size: 1.6rem;
+            margin-bottom: 0.6rem;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+        p {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+        .specs {
+            background-color: #1f1f23;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+        .specs strong {
+            display: block;
+            color: var(--accent);
+            font-size: 0.95rem;
+            margin-top: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-card">
+        <div class="icon-circle">&#x2714;</div>
+        <h1>{{ site2_title | default('Site Two Ready') }}</h1>
+        <p>Serving web assets via Nginx virtual host configuration for <strong>{{ site2_domain | default('myserviceportal.com') }}</strong>.</p>
+        
+        <div class="specs">
+            <div>
+                Root Path
+                <strong>/var/www/html/website2</strong>
+            </div>
+            <div>
+                Server Node
+                <strong>{{ ansible_hostname }}</strong>
+            </div>
+            <div>
+                Status
+                <strong>Online</strong>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

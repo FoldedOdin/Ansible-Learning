@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site1_title | default('Site One | Edge Node') }}</title>
+    <style>
+        :root {
+            --primary: #38bdf8;
+            --bg-body: #0b1120;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.5);
+        }
+        .window-header {
+            background-color: #0f172a;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #eab308; }
+        .dot-green { background: #22c55e; }
+        .window-title {
+            margin-left: auto;
+            color: var(--text-sub);
+            font-size: 0.8rem;
+        }
+        .content {
+            padding: 2rem;
+            text-align: left;
+        }
+        .status-tag {
+            background-color: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 1.7rem;
+            margin: 1.25rem 0 0.5rem;
+        }
+        p {
+            color: var(--text-sub);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+        .meta-table td {
+            padding: 0.45rem 0;
+            border-top: 1px solid #334155;
+        }
+        .meta-table td:first-child { color: var(--text-sub); }
+        .meta-table td:last-child { text-align: right; color: var(--primary); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="window-header">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+            <span class="window-title">{{ site1_domain | default('site1.example.com') }}</span>
+        </div>
+        <div class="content">
+            <span class="status-tag">Cluster Node A // Active</span>
+            <h1>{{ site1_title | default('Site One Production') }}</h1>
+            <p>Nginx virtual host is operational and responding on port 80/443.</p>
+
+            <table class="meta-table">
+                <tr>
+                    <td>Host Server:</td>
+                    <td>{{ ansible_hostname }}</td>
+                </tr>
+                <tr>
+                    <td>Root Directory:</td>
+                    <td>/var/www/html/website1</td>
+                </tr>
+                <tr>
+                    <td>Platform OS:</td>
+                    <td>{{ ansible_distribution }} {{ ansible_distribution_version }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

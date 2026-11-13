@@ -1,0 +1,5 @@
+---
+- name: Multi-User Environment Provisioning with OS-Specific Packages and User Profiles
+  hosts: servers
+  roles:
+    - user_creation

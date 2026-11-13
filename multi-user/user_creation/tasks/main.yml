@@ -1,0 +1,37 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Load OS specific Packages
+  ansible.builtin.include_vars:
+    file: "{{ ansible_os_family }}.yml"
+- name: Ensure target utilities are installed
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ common_utilities }}"
+- name: Ensure secondary user group exists
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - users
+- name: Create managed users
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    comment: "{{ item.full_name }}"
+    shell: "{{ item.shell }}"
+    groups: "{{ item.groups }}"
+    append: true
+    create_home: true
+    state: present
+  loop: "{{ managed_users }}"
+- name: Add custom aliases to user profiles (looping through nested data)
+  ansible.builtin.lineinfile:
+    path: "/home/{{ item.0.username }}/.bashrc"
+    line: "alias {{ item.1.name }}='{{ item.1.cmd }}'"
+    create: true
+    owner: "{{ item.0.username }}"
+    group: "{{ item.0.username }}"
+    mode: "0644"
+  with_subelements:
+    - "{{ managed_users }}"
+    - aliases

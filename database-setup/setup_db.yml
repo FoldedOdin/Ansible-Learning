@@ -1,0 +1,71 @@
+---
+- name: Install and configure 
+  hosts: db_nodes
+  vars_files:
+    - vars/vault.yml
+  tasks:
+    - name: Install PostgresSQL and Python bindings (Lubuntu)
+      ansible.builtin.apt:
+        name: 
+          - postgresql
+          - postgresql-contrib
+          - python3-psycopg2
+        state: present
+        update_cache: true
+      when: ansible_facts['os_family'] == 'Debian'
+    
+    - name: Install PostgresSQL and python bindings (fedora)
+      ansible.builtin.dnf:
+        name:
+          - postgresql-server
+          - postgresql-contrib
+          - python3-psycopg2
+        state: present
+      when: ansible_facts['os_family'] == 'RedHat'
+
+    - name: Check if PostgresSQL cluster is already initialized (Fedora)
+      ansible.builtin.stat:
+        path: /var/lib/pgsql/data/PG_VERSION
+      register: pg_initialized
+      when: ansible_facts['os_family'] == 'RedHat'
+    - name: Initialize Postgres data directory
+      ansible.builtin.command: /usr/bin/postgresql-setup --initdb
+      when: 
+        - ansible_facts['os_family'] == 'RedHat'
+        - not pg_initialized.stat.exists
+
+    - name: Ensure PostgreSQL service is started and enabled
+      ansible.builtin.service:
+        name: postgresql
+        state: started
+        enabled: true
+
+    - name: Allow Postgres through Firewall ( Fedora )
+      ansible.posix.firewalld:
+        service: postgresql
+        permanent: true
+        state: enabled
+        immediate: true
+      when: ansible_facts['os_family'] == 'Redhat'
+      ignore_errors: true
+
+    - name: allow Postgres through ufw (Lubuntu)
+      community.general.ufw:
+        rule: allow
+        port: '5432'
+        proto: tcp
+      when: ansible_facts['os_family'] == 'Debian'
+      ignore_errors: true
+
+    - name: Create database user
+      community.postgresql.postgresql_user:
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+        state: present
+      become_user: postgres
+    - name: Create application database
+      community.postgresql.postgresql_db:
+        name: "{{ db_name }}"
+        owner: "{{ db_user }}"
+        state: present
+      become_user: postgres

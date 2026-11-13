@@ -1,0 +1,28 @@
+---
+- name: install service also start and enable it
+  hosts: all
+  gather_facts: false
+  vars:
+    site_title: The Best Site Ever!!!
+  tasks:
+    - name: install nginx
+      package:
+        name: nginx
+        state: present
+      notify: start and enable nginx
+    - name: deploy index.html from template
+      template:
+        src: ./templates/index.html.j2
+        dest: /var/www/html/index.html
+        mode: '0644'
+      notify: Restart Nginx    
+  handlers:
+    - name: start and enable nginx
+      service:
+        name: nginx
+        state: started
+        enabled: true
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
