@@ -1,0 +1,8 @@
+---
+- name: full nginx Setup
+  hosts: webservers
+  become: true
+  
+  roles:
+  - webserver 
+

@@ -1,0 +1,32 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: install nginx
+  package:
+    name: nginx
+    state: present
+- name: start and enable nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true
+- name: allow Nginx traffic through ufw 
+  community.general.ufw:
+    rule: allow
+    name: 'Nginx Full'
+  when: ansible_facts['os_family'] == "Debian"
+- name: Allow HTTP and HTTPS traffic through Firewalld
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: enabled
+    immediate: true
+  loop:
+    - http
+    - https
+  when: ansible_facts['os_family'] == "RedHat"
+- name: Deploy a custom index.html to verify setup
+  ansible.builtin.copy:
+    content: "<h1> Nginx is running on {{ inventory_hostname }} ({{ ansible_facts['distribution'] }}) </h1>\n"
+    dest: "{{ nginx_web_root }}/index.html"
+    mode: '0644'
+  notify: Reload Nginx
